@@ -221,6 +221,163 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (10, 10, 2);
 
 
+/*EXERCÍCIO 1 -  1.	Selecione todos os clientes em ordem alfabética crescente pelo nome.*/
+
+SELECT *
+FROM Clientes
+ORDER BY Nome
+ASC;
+
+
+/*EXERCÍCIO 2 -  2.	Selecione todos os produtos com preço superior a $10, ordenados por preço decrescente, limitando o resultado a 5 produtos.*/
+
+SELECT  *
+FROM  Produtos
+WHERE Preco >= 10
+ORDER BY Preco
+DESC
+LIMIT 5;
+
+/*EXERCÍCIO 3 -  3.	Selecione os clientes com pedidos entre 120 a 190 reais, mostre qual menor valor pedido.*/
+
+SELECT Clientes.Nome, Pedidos.ValorTotal
+FROM Clientes
+JOIN Pedidos
+ON Clientes.ClienteID = Pedidos.ClienteID
+WHERE ValorTotal BETWEEN 120 AND 190
+ORDER BY ValorTotal
+ASC
+LIMIT 1;
+
+/*EXERCÍCIO 4 -  4.	Selecione todos os pedidos com os nomes dos clientes.*/
+
+SELECT Clientes.Nome,  Pedidos.DataPedido
+FROM  Pedidos
+JOIN Clientes
+ON Clientes.ClienteID = Pedidos.ClienteID
+ORDER BY Nome;
+
+/*EXERCÍCIO 5 -  5.	Mostre o ID do pedido, valor, data, ID do cliente e o nome do cliente.*/
+
+SELECT  Pedidos.PedidoID, Pedidos.ValorTotal, Pedidos.DataPedido, Clientes.ClienteId, Clientes.Nome
+FROM  Pedidos
+JOIN Clientes
+ON Clientes.ClienteID = Pedidos.ClienteID
+ORDER BY Nome;
+
+
+/*EXERCÍCIO 6 -  6.	Mostre todos os Clientes com Pedidos com um valor acima de $200.*/
+
+SELECT  Pedidos.PedidoID, Pedidos.ValorTotal, Pedidos.DataPedido, Clientes.ClienteId, Clientes.Nome
+FROM  Pedidos
+JOIN Clientes
+ON Clientes.ClienteID = Pedidos.ClienteID
+WHERE ValorTotal >= 200
+ORDER BY ValorTotal;
+
+/*EXERCÍCIO 7 -  7.	Organize de Forma crescente alfabética o nome dos clientes selecionados acima.*/
+
+SELECT  Pedidos.PedidoID, Pedidos.ValorTotal, Pedidos.DataPedido, Clientes.ClienteId, Clientes.Nome
+FROM  Pedidos
+JOIN Clientes
+ON Clientes.ClienteID = Pedidos.ClienteID
+WHERE ValorTotal >= 200
+ORDER BY Nome
+ASC;
+
+/*EXERCÍCIO 8 -  8.	Selecione todos os pedidos feitos entre 27 de setembro de 2023 e 08 de outubro de 2023 com a data de forma crescente.*/
+
+SELECT *
+FROM Pedidos
+WHERE DataPedido BETWEEN '2023-09-27' AND  '2023-10-08'
+ORDER BY DataPedido
+ASC;
+
+/*EXERCÍCIO 9 -  9.	Selecione os 5 produtos mais baratos.*/
+
+SELECT *
+FROM Produtos
+ORDER BY Preco
+ASC
+LIMIT 5;
+
+/*EXERCÍCIO 10 -  10.	Selecione todos os produtos que foram pedidos em um determinado pedido.*/
+
+SELECT Produtos.NomeProduto,Pedidos.PedidoID
+FROM Pedidos
+JOIN ItensPedido ON Pedidos.PedidoID = ItensPedido.PedidoID
+JOIN Produtos ON Produtos.ProdutoID = ItensPedido.ProdutoID
+WHERE Pedidos.PedidoID = 1
+;
+desc itensPedido;
+select pedidoID, ProdutoID
+from ItensPedido
+where PedidoID = 3;
 
 
 
+/*EXERCÍCIO 11 -  11.	Mostre os clientes que possuem pedido que tenham a letra O no final do nome.*/
+
+SELECT Clientes.Nome, Pedidos.PedidoID
+FROM Pedidos
+LEFT JOIN Clientes
+ON Clientes.ClienteID = Pedidos.PedidoID
+WHERE nome LIKE '%o';
+
+
+/*EXERCÍCIO 12 -  12.	Selecione todos os produtos com os nomes dos clientes que os compraram.*/
+
+SELECT Clientes.Nome, Produtos.NomeProduto
+FROM Clientes
+JOIN Pedidos ON Clientes.ClienteID = Pedidos.PedidoID
+JOIN ItensPedido ON Pedidos.PedidoID = ItensPedido.ProdutoID
+JOIN Produtos ON Produtos.ProdutoID = ItensPedido.ProdutoID;
+
+/*EXERCÍCIO 13 -  13.	Encontre os clientes que não fizeram nenhum pedido.*/
+
+SELECT Clientes.ClienteID, Clientes.Nome, Pedidos.ValorTotal
+FROM Clientes
+LEFT JOIN Pedidos
+ON Pedidos.PedidoID = Clientes.ClienteID
+WHERE ValorTotal is NULL;
+
+/*EXERCÍCIO 14 -  14.	Mostre somente os clientes que começam com a letra A.*/
+
+SELECT *
+FROM Clientes
+WHERE Nome LIKE 'a%';
+
+/*EXERCÍCIO 15 -  15.	Encontre todos os pedidos feitos entre duas datas e mostre os produtos incluídos nesses pedidos, limitando os resultados a 7 pedidos.*/
+
+SELECT Pedidos.DataPedido, Produtos.NomeProduto
+FROM Pedidos
+JOIN ItensPedido ON Pedidos.PedidoID = ItensPedido.ItemID
+JOIN Produtos ON Produtos.ProdutoID = ItensPedido.PedidoID
+WHERE DataPedido BETWEEN '2023-09-16' AND '2023-10-06'
+ORDER BY DataPedido
+ASC
+LIMIT 7;
+
+/*EXERCÍCIO 16 -  16.	Mostre os clientes que possuam ‘arc’ em qualquer parte do nome.*/
+
+SELECT Nome
+FROM Clientes
+WHERE Nome LIKE '%arc%';
+
+/*EXERCÍCIO 17 -  17.	Mostre o ID do pedido, data, valor total, nome do produto e a quantidade.*/
+
+SELECT Pedidos.PedidoID, Pedidos.DataPedido, Pedidos.ValorTotal, Produtos.NomeProduto, ItensPedido.Quantidade
+FROM Pedidos
+JOIN ItensPedido ON Pedidos.PedidoID = ItensPedido.ItemID
+JOIN Produtos ON Produtos.ProdutoID = ItensPedido.PedidoID;
+
+/*EXERCÍCIO 18 -  18.	Com a consulta realizada acima, mostre agora também o nome do cliente, selecionando apenas os 5 valores totais mais alto.*/
+
+SELECT Pedidos.PedidoID, Pedidos.DataPedido, Pedidos.ValorTotal, Produtos.NomeProduto, ItensPedido.Quantidade, Clientes.Nome
+FROM Pedidos
+JOIN Clientes ON Clientes.ClienteID = Pedidos.PedidoID
+JOIN ItensPedido ON Pedidos.PedidoID = ItensPedido.ItemID
+JOIN Produtos ON Produtos.ProdutoID = ItensPedido.PedidoID
+ORDER BY ValorTotal
+DESC
+LIMIT 5;
