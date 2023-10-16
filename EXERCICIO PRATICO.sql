@@ -138,6 +138,9 @@ INSERT INTO Clientes (Nome, Email, Telefone) VALUES
     ('Estela Ferreira', 'estela@email.com', '(90) 9876-5432');
 
 
+select * from Clientes
+order by Nome ASC;
+
 INSERT INTO Produtos (NomeProduto, Preco) VALUES
     ('Produto 1', 10.99),
     ('Produto 2', 15.50),
@@ -196,6 +199,161 @@ INSERT INTO Pedidos (ClienteID, DataPedido, ValorTotal) VALUES
     (19, '2023-10-26', 45.75),
     (20, '2023-10-28', 130.80),
     (20, '2023-10-29', 110.25);
+    
+    
+ /*1*/
+ Select * from Clientes
+ order by nome Asc;
+ 
+ 
+ 
+ 
+/*2*/
+SELECT * FROM Produtos
+where preco
+between 10 and 31
+order by preco Desc
+limit 5;
+
+
+ 
+ /*3*/
+
+select *from Pedidos
+where ValorTotal
+between 120 and 190
+order by ValorTotal asc
+limit 1;
+
+
+/*4*/
+select Clientes.Nome, Pedidos.Valortotal
+from Clientes
+join Pedidos
+on Pedidos.ClienteID = Clientes.ClienteID;
+
+/*5*/
+select Pedidos.PedidoID,Clientes.ClienteID ,Clientes.Nome, Pedidos.Valortotal, Pedidos.DataPedido
+from Clientes
+join Pedidos on Pedidos.ClienteID = Clientes.ClienteID;
+
+
+
+/*6*/
+select Clientes.Nome, Pedidos.Valortotal
+from Clientes
+join Pedidos
+on Pedidos.ClienteID = Clientes.ClienteID
+where Valortotal
+between 200 and 270;
+
+
+
+/*7*/
+select Clientes.Nome, Pedidos.Valortotal
+from Clientes
+join Pedidos
+on Pedidos.ClienteID = Clientes.ClienteID
+where Valortotal
+between 200 and 270
+order by Clientes.Nome ASC;
+
+
+/*8*/
+select * From Pedidos where DataPedido
+between'2023-09-27'and'2023-10-08'
+order by DataPedido Asc
+;
+
+/*9*/
+
+SELECT * FROM Produtos
+where preco
+between 10 and 31
+order by preco ASC
+limit 5;
+
+
+/*10*/
+
+
+select Clientes.ClienteID ,Clientes.nome, Produtos.NomeProduto,ItensPedido.Quantidade
+from itensPedido
+join produtos on   itensPedido.PedidoId =  Produtos.ProdutoID 
+join Clientes on itensPedido.PedidoID = Clientes.clienteID
+where PedidoID= 3
+;
+
+
+
+/*11*/
+
+select nome
+ from Clientes
+join Pedidos on Clientes.clienteID = Pedidos.PedidoID 
+where nome
+like '%o';
+
+/*12*/
+
+select Clientes.nome, Produtos.NomeProduto
+from Clientes 
+JOIN Pedidos on  Clientes.ClienteID= Pedidos.PedidoID
+JOIN ItensPedido on Pedidos.PedidoID = ItensPedido.PedidoID
+join Produtos on  Produtos.ProdutoID = ItensPedido.ProdutoID;
+
+
+
+/*13*/
+select Clientes.nome, Clientes.ClienteID, Pedidos.ValorTotal
+from clientes 
+left join pedidos on Pedidos.PedidoID = Clientes.ClienteID
+where ValorTotal is null;
+
+
+/*14*/
+
+select nome
+from clientes
+where nome
+like 'a%';
+
+
+
+/*15*/
+Select Clientes.ClienteID, Clientes.nome ,Pedidos.PedidoID, Pedidos.DataPedido, Produtos.NomeProduto,Produtos.preco
+From Pedidos
+join Produtos on Pedidos.PedidoID = Produtos.ProdutoID
+join Clientes on Pedidos.PedidoID = Clientes.ClienteID
+where DataPedido
+between '2023-09-01' and '2023-10-29'
+limit 7;
+
+/*16*/
+
+select *from clientes
+where nome
+like '%arc%';
+
+/*17*/
+
+select Pedidos.PedidoID,Produtos.NomeProduto, Pedidos.DataPedido,Pedidos.ValorTotal,ItensPedido.Quantidade
+from ItensPedido
+join produtos on Produtos.ProdutoID = ItensPedido.ItemID
+join Pedidos on Pedidos.PedidoID = ItensPedido.ItemID;
+
+
+
+/*18*/
+select Clientes.ClienteID, Clientes.Nome ,Pedidos.PedidoID, Pedidos.DataPedido,Pedidos.ValorTotal,Produtos.NomeProduto,ItensPedido.Quantidade
+from Pedidos
+join produtos on  Pedidos.PedidoID = Produtos.ProdutoID
+join Clientes on Pedidos.PedidoID = Clientes.ClienteID
+join ItensPedido on Pedidos.PedidoID = ItensPedido.ItemID
+order by ValorTotal desc
+limit 5;
+
+
 
 
 INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
@@ -219,8 +377,3 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (9, 6, 2),
     (10, 8, 1),
     (10, 10, 2);
-
-
-
-
-
