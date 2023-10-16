@@ -3,7 +3,7 @@ CREATE DATABASE Gerenciador;
 
 -- Usar a base de dados
 USE Gerenciador;
-
+SHOW TABLES;
 -- Criar a tabela 'Clientes'
 CREATE TABLE Clientes (
     ClienteID INT AUTO_INCREMENT PRIMARY KEY,
@@ -219,6 +219,79 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (9, 6, 2),
     (10, 8, 1),
     (10, 10, 2);
+-- questao 1
+select * from clientes order by Nome ASC ;
+
+ -- questao 2
+SELECT * FROM PRODUTOS  WHERE PRECO >10 ORDER  BY PRECO DESC LIMIT 5 ;
+-- questao 3
+SELECT * FROM PEDIDOS WHERE VALORTOTAL BETWEEN 120 AND 190 ORDER BY  VALORTOTAL ASC LIMIT 1;
+ -- questao 4
+SELECT * FROM PEDIDOS;
+SELECT pedidos.PEDIDOID,pedidos.DATAPEDIDO,pedidos.VALORTOTAL ,CLIENTES.NOME 
+FROM CLIENTES 
+INNER JOIN PEDIDOS 
+ON  CLIENTES.CLIENTEID = PEDIDOS.CLIENTEID ;
+-- questao 5
+
+select  pedidos.pedidoid,pedidos.datapedido,pedidos.valortotal,clientes.nome
+from clientes
+inner join pedidos
+on clientes.clienteid = pedidos.clienteid;
+-- questao 6
+select * from pedidos order by valortotal asc ;
+-- questao 7
+ select nome from  clientes  order by  nome asc ;
+-- queestao 8
+ select DataPedido from Pedidos where DataPedido between "2023-09-27" and "2023-10-08";
+ 
+ -- questao 9
+ select NomeProduto,Preco from produtos order by preco asc limit 5 ;
+ 
+ -- questao 10
+ select  ProdutoID, PedidoID from itenspedido
+ where PedidoID=3;
+ 
+-- questao 11
+select * from pedidos join clientes on pedidos.clienteid = clientes.clienteid where nome like "%o";
+
+-- questao 12
+ select * from  produtos join clientes on produtos.clienteid where nome ;
+ 
+ select * from produtos;
+ 
+ -- questao 13
+ select * from clientes left join pedidos on pedidos.clienteid = clientes.clienteid where PedidoID is null
+ ;
+ select * from pedidos;
+ 
+ -- questao 14
+ select * from clientes ;
+ 
+ select * from clientes  where nome like "A%" ;
+ 
+ -- questao 15
+ select * from pedidos where datapedido between '2023-09-01' and "2023-09-17";
+ 
+ 
+ -- questao 16
+ select * from clientes; 
+ select * from clientes where nome  like '%arc%';
+
+-- questao 17
+select pedidoid,data,valortotal,nomedoproduto,quantidade,
+from pedidos
+join produto
+on 
+join
+on; 
+ 
+ 
+
+
+
+
+
 
 
 
