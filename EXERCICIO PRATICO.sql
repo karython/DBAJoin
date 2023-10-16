@@ -5,47 +5,80 @@ CREATE DATABASE Gerenciador;
 USE Gerenciador;
 
 -- Criar a tabela 'Clientes'
-CREATE TABLE Clientes (
-    ClienteID INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Cliente (
+    ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(50) NOT NULL,
     Email VARCHAR(100),
     Telefone VARCHAR(15)
 );
 
 -- Criar a tabela 'Pedidos'
-CREATE TABLE Pedidos (
-    PedidoID INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Pedido (
+    ID_Pedido INT AUTO_INCREMENT PRIMARY KEY,
     DataPedido DATE,
     ValorTotal DECIMAL(10, 2),
-    ClienteID INT,
-    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
+    ID_Cliente INT,
+    FOREIGN KEY (ID_Cliente) REFERENCES Cliente(ID_Cliente)
 );
 
 -- Criar a tabela 'Produtos'
-CREATE TABLE Produtos (
-    ProdutoID INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Produto (
+    ID_Produto INT AUTO_INCREMENT PRIMARY KEY,
     NomeProduto VARCHAR(50) NOT NULL,
     Preco DECIMAL(10, 2) NOT NULL
 );
-
+drop tables ItensPedido;
 -- Criar a tabela 'ItensPedido' para representar a relação entre 'Pedidos' e 'Produtos'
 CREATE TABLE ItensPedido (
     ItemID INT AUTO_INCREMENT PRIMARY KEY,
-    PedidoID INT,
-    ProdutoID INT,
+    ID_Pedido INT,
+    ID_Produto INT,
     Quantidade INT,
-    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID),
-    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID)
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido) on delete cascade,
+    FOREIGN KEY (ID_Produto) REFERENCES Produto(ID_Produto)
+    on delete cascade
 );
+desc ItensPedido;
 
 
-select * from clientes;
-select * from produtos;
-select * from pedidos;
+
+select Pedido.ID_Pedido, Pedido.ValorTotal, Cliente.Nome
+from Cliente
+join Pedido
+on Pedido.ID_Cliente = Cliente.ID_Cliente
+where ValorTotal between 100 and 150
+
+order by ValorTotal ASC
+limit 5;
+
+
+select Cliente.Nome, Pedido.ValorTotal
+from Cliente
+left join Pedido
+on Pedido.ID_Cliente = Cliente.ID_Cliente
+;
+
+
+
+
+
+
+
+
+
+
+
+
+
+select * from cliente;
+select * from produto;
+select * from pedido;
 select * from ItensPedido;
 
 
-INSERT INTO Clientes (Nome, Email, Telefone) VALUES
+
+
+INSERT INTO Cliente (Nome, Email, Telefone) VALUES
     ('João Silva', 'joao@email.com', '(11) 1234-5678'),
     ('Maria Santos', 'maria@email.com', '(22) 9876-5432'),
     ('Pedro Alves', 'pedro@email.com', '(33) 8765-4321'),
@@ -138,7 +171,7 @@ INSERT INTO Clientes (Nome, Email, Telefone) VALUES
     ('Estela Ferreira', 'estela@email.com', '(90) 9876-5432');
 
 
-INSERT INTO Produtos (NomeProduto, Preco) VALUES
+INSERT INTO Produto (NomeProduto, Preco) VALUES
     ('Produto 1', 10.99),
     ('Produto 2', 15.50),
     ('Produto 3', 20.75),
@@ -152,7 +185,7 @@ INSERT INTO Produtos (NomeProduto, Preco) VALUES
 
 
 
-INSERT INTO Pedidos (ClienteID, DataPedido, ValorTotal) VALUES
+INSERT INTO Pedido (ID_Cliente, DataPedido, ValorTotal) VALUES
     (1, '2023-09-01', 150.00),
     (1, '2023-09-02', 80.25),
     (1, '2023-09-05', 220.50),
@@ -198,7 +231,7 @@ INSERT INTO Pedidos (ClienteID, DataPedido, ValorTotal) VALUES
     (20, '2023-10-29', 110.25);
 
 
-INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
+INSERT INTO ItensPedido (ID_Pedido, ID_Produto, Quantidade) VALUES
     (1, 1, 2),
     (1, 3, 1),
     (2, 2, 3),
