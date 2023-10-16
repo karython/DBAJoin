@@ -61,8 +61,17 @@ on Pedido.ID_Cliente = Cliente.ID_Cliente
 
 
 
+select Pedido.ID_Pedido, Produto.NomeProduto
+from pedido
+join ItensPedido on Pedido.ID_Pedido = ItensPedido.ID_Pedido
+join Produto on ItensPedido.ID_Produto = Produto.ID_Produto
+where Pedido.ID_Pedido =1;
 
 
+select *
+from Cliente
+left join pedido
+on Cliente.ID_Cliente = Pedido.ID_Cliente;
 
 
 
