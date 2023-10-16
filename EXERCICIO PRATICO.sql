@@ -381,3 +381,5 @@ JOIN Produtos ON Produtos.ProdutoID = ItensPedido.PedidoID
 ORDER BY ValorTotal
 DESC
 LIMIT 5;
+
+SELECT * FROM Clientes;
