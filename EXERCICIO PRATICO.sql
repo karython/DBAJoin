@@ -279,16 +279,25 @@ select * from pedidos join clientes on pedidos.clienteid = clientes.clienteid wh
  select * from clientes where nome  like '%arc%';
 
 -- questao 17
-select pedidoid,data,valortotal,nomedoproduto,quantidade,
+select pedidos.pedidoID,pedidos.datapedido,pedidos.valortotal,produtos.nomeproduto,itenspedido.quantidade
 from pedidos
-join produto
-on 
-join
-on; 
+join itenspedido
+on itenspedido.pedidoID = pedidos.pedidoID
+join produtos
+on itenspedido.produtoID = produtos.produtoID; 
  
  
 
+select * from pedidos;
 
+-- questao 18
+select pedidos.pedidoID,pedidos.datapedido,pedidos.valortotal,produtos.nomeproduto,itenspedido.quantidade, Clientes.Nome
+from pedidos
+join itenspedido
+on itenspedido.pedidoID = pedidos.pedidoID
+join produtos
+on itenspedido.produtoID = produtos.produtoID
+JOIN Clientes ON Pedidos.ClienteID = Clientes.ClienteID ORDER BY ValorTotal DESC LIMIT 5;; 
 
 
 
