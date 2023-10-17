@@ -5,80 +5,47 @@ CREATE DATABASE Gerenciador;
 USE Gerenciador;
 
 -- Criar a tabela 'Clientes'
-CREATE TABLE Cliente (
-    ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Clientes (
+    ClienteID INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(50) NOT NULL,
     Email VARCHAR(100),
     Telefone VARCHAR(15)
 );
 
 -- Criar a tabela 'Pedidos'
-CREATE TABLE Pedido (
-    ID_Pedido INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Pedidos (
+    PedidoID INT AUTO_INCREMENT PRIMARY KEY,
     DataPedido DATE,
     ValorTotal DECIMAL(10, 2),
-    ID_Cliente INT,
-    FOREIGN KEY (ID_Cliente) REFERENCES Cliente(ID_Cliente)
+    ClienteID INT,
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
 );
 
 -- Criar a tabela 'Produtos'
-CREATE TABLE Produto (
-    ID_Produto INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Produtos (
+    ProdutoID INT AUTO_INCREMENT PRIMARY KEY,
     NomeProduto VARCHAR(50) NOT NULL,
     Preco DECIMAL(10, 2) NOT NULL
 );
-drop tables ItensPedido;
+
 -- Criar a tabela 'ItensPedido' para representar a relação entre 'Pedidos' e 'Produtos'
 CREATE TABLE ItensPedido (
     ItemID INT AUTO_INCREMENT PRIMARY KEY,
-    ID_Pedido INT,
-    ID_Produto INT,
+    PedidoID INT,
+    ProdutoID INT,
     Quantidade INT,
-    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido) on delete cascade,
-    FOREIGN KEY (ID_Produto) REFERENCES Produto(ID_Produto)
-    on delete cascade
+    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID),
+    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID)
 );
-desc ItensPedido;
 
 
-
-select Pedido.ID_Pedido, Pedido.ValorTotal, Cliente.Nome
-from Cliente
-join Pedido
-on Pedido.ID_Cliente = Cliente.ID_Cliente
-where ValorTotal between 100 and 150
-
-order by ValorTotal ASC
-limit 5;
-
-
-select Cliente.Nome, Pedido.ValorTotal
-from Cliente
-left join Pedido
-on Pedido.ID_Cliente = Cliente.ID_Cliente
-;
-
-
-
-
-
-
-
-
-
-
-
-
-
-select * from cliente;
-select * from produto;
-select * from pedido;
+select * from clientes;
+select * from produtos;
+select * from pedidos;
 select * from ItensPedido;
 
 
-
-
-INSERT INTO Cliente (Nome, Email, Telefone) VALUES
+INSERT INTO Clientes (Nome, Email, Telefone) VALUES
     ('João Silva', 'joao@email.com', '(11) 1234-5678'),
     ('Maria Santos', 'maria@email.com', '(22) 9876-5432'),
     ('Pedro Alves', 'pedro@email.com', '(33) 8765-4321'),
@@ -171,7 +138,7 @@ INSERT INTO Cliente (Nome, Email, Telefone) VALUES
     ('Estela Ferreira', 'estela@email.com', '(90) 9876-5432');
 
 
-INSERT INTO Produto (NomeProduto, Preco) VALUES
+INSERT INTO Produtos (NomeProduto, Preco) VALUES
     ('Produto 1', 10.99),
     ('Produto 2', 15.50),
     ('Produto 3', 20.75),
@@ -185,7 +152,7 @@ INSERT INTO Produto (NomeProduto, Preco) VALUES
 
 
 
-INSERT INTO Pedido (ID_Cliente, DataPedido, ValorTotal) VALUES
+INSERT INTO Pedidos (ClienteID, DataPedido, ValorTotal) VALUES
     (1, '2023-09-01', 150.00),
     (1, '2023-09-02', 80.25),
     (1, '2023-09-05', 220.50),
@@ -231,7 +198,7 @@ INSERT INTO Pedido (ID_Cliente, DataPedido, ValorTotal) VALUES
     (20, '2023-10-29', 110.25);
 
 
-INSERT INTO ItensPedido (ID_Pedido, ID_Produto, Quantidade) VALUES
+INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (1, 1, 2),
     (1, 3, 1),
     (2, 2, 3),
@@ -252,8 +219,134 @@ INSERT INTO ItensPedido (ID_Pedido, ID_Produto, Quantidade) VALUES
     (9, 6, 2),
     (10, 8, 1),
     (10, 10, 2);
+    
+show tables from gerenciador; 
+select * from clientes;
+select * from itenspedido;
+select * from pedidos;
+select * from produtos;
+    
+desc pedidos;
+desc itenspedido;
+    
+select * from pedidos as p
+join clientes as c
+on c.clienteID = PedidoID 
+order by c.nome;
+    
+/*Atividade 1*/
+Select * from clientes order by nome;
 
+/*Atividade 2*/
+Select * from Produtos where preco > '10.00' order by preco desc limit 5;
 
+/*Atividade 3*/
+select Valortotal, c.nome from pedidos as p 
+join clientes as c
+on c.clienteid = p.pedidoid
+where valortotal between '120.00' and '190.00';
 
+select Valortotal, c.nome from pedidos as p 
+join clientes as c
+on c.clienteid = p.pedidoid
+order by valortotal limit 1;
 
+/*Atividade 4*/
+select * from pedidos as p 
+join clientes as c
+on c.clienteid = p.pedidoid;
 
+/*Atividade 5*/
+select * from pedidos;
+select p.pedidoid, p.valortotal, p.datapedido, c.nome, c.clienteid from pedidos as p 
+join clientes as c
+on c.clienteid = p.pedidoid;
+
+/*Atividade 6*/
+select c.nome from pedidos as p 
+join clientes as c
+on c.clienteid = p.pedidoid
+where valortotal > '200.00';
+
+/*Atividade 7*/
+select c.nome from pedidos as p 
+join clientes as c
+on c.clienteid = p.pedidoid
+where valortotal > '200.00'
+order by c.nome;
+
+/*Atividade 8*/
+Select * from pedidos 
+where datapedido between '2023-08-27' and '2023-09-08' 
+Order by datapedido;
+
+/*Atividade 9*/
+Select * from produtos order by preco limit 5;
+
+/*Atividade 10*/
+select ip.PedidoId, ip.produtoid, p.nomeproduto from itenspedido as ip
+join produtos as p
+on p.produtoid = ip.produtoid
+order by pedidoid;
+
+/*Atividade 11*/
+select * from pedidos as p
+join clientes as c
+on p.clienteid = c.clienteid 
+where c.nome like '_%O';
+
+/*Atividade 12*/
+Select p.pedidoid, c.nome, po.nomeproduto from itenspedido as ip 
+join pedidos as p
+on p.pedidoid = ip.pedidoid
+join clientes as c
+on c.clienteid = p.clienteid
+join produtos as po
+on po.produtoid = ip.produtoid;
+
+/*Atividade 13*/
+select * from clientes as c
+left outer join pedidos as p
+on p.clienteid = c.clienteid
+where p.pedidoid is null;
+
+SELECT c.* FROM Clientes as c 
+WHERE NOT EXISTS (SELECT 1 FROM pedidos as p WHERE p.clienteid = c.clienteid); /*Gerado por ia*/
+SELECT c.* FROM Clientes as c 
+WHERE c.clienteID NOT IN (SELECT p.clienteID FROM pedidos as p); /*Gerado por ia*/
+
+/*Atividade 14*/
+select nome from clientes where nome like 'A%_';
+
+/*Atividade 15*/
+Select p.DataPedido, pr.nomeproduto from pedidos as p
+join itenspedido as ip
+on ip.pedidoid = p.pedidoid
+join produtos as pr
+on pr.produtoid = ip.produtoid
+where p.datapedido between '2023-09-01' and '2023-09-07' limit 7;
+
+/*Atividade 16*/
+select * from clientes where nome like '%arc%';
+
+/*Atividade 17*/
+select * from produtos;
+select * from clientes;
+select * from itenspedido;
+select * from pedidos;
+
+select p.pedidoid, p. datapedido, p.valortotal, pr.nomeproduto, ip.quantidade from pedidos as p
+join itenspedido as ip
+on ip.pedidoid = p.pedidoid
+join produtos as pr 
+on pr.produtoid = ip.produtoid;
+
+/*Atividade 18*/
+select p.pedidoid, p. datapedido, p.valortotal, pr.nomeproduto, ip.quantidade from pedidos as p
+join itenspedido as ip
+on ip.pedidoid = p.pedidoid
+join produtos as pr 
+on pr.produtoid = ip.produtoid
+join clientes as c
+on c.clienteid = p.clienteid
+order by p.valortotal desc limit 5;
