@@ -5,80 +5,47 @@ CREATE DATABASE Gerenciador;
 USE Gerenciador;
 
 -- Criar a tabela 'Clientes'
-CREATE TABLE Cliente (
-    ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Clientes (
+    ClienteID INT AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(50) NOT NULL,
     Email VARCHAR(100),
     Telefone VARCHAR(15)
 );
 
 -- Criar a tabela 'Pedidos'
-CREATE TABLE Pedido (
-    ID_Pedido INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Pedidos (
+    PedidoID INT AUTO_INCREMENT PRIMARY KEY,
     DataPedido DATE,
     ValorTotal DECIMAL(10, 2),
-    ID_Cliente INT,
-    FOREIGN KEY (ID_Cliente) REFERENCES Cliente(ID_Cliente)
+    ClienteID INT,
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
 );
 
 -- Criar a tabela 'Produtos'
-CREATE TABLE Produto (
-    ID_Produto INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Produtos (
+    ProdutoID INT AUTO_INCREMENT PRIMARY KEY,
     NomeProduto VARCHAR(50) NOT NULL,
     Preco DECIMAL(10, 2) NOT NULL
 );
-drop tables ItensPedido;
+
 -- Criar a tabela 'ItensPedido' para representar a relação entre 'Pedidos' e 'Produtos'
 CREATE TABLE ItensPedido (
     ItemID INT AUTO_INCREMENT PRIMARY KEY,
-    ID_Pedido INT,
-    ID_Produto INT,
+    PedidoID INT,
+    ProdutoID INT,
     Quantidade INT,
-    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido) on delete cascade,
-    FOREIGN KEY (ID_Produto) REFERENCES Produto(ID_Produto)
-    on delete cascade
+    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID),
+    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID)
 );
-desc ItensPedido;
 
 
-
-select Pedido.ID_Pedido, Pedido.ValorTotal, Cliente.Nome
-from Cliente
-join Pedido
-on Pedido.ID_Cliente = Cliente.ID_Cliente
-where ValorTotal between 100 and 150
-
-order by ValorTotal ASC
-limit 5;
-
-
-select Cliente.Nome, Pedido.ValorTotal
-from Cliente
-left join Pedido
-on Pedido.ID_Cliente = Cliente.ID_Cliente
-;
-
-
-
-
-
-
-
-
-
-
-
-
-
-select * from cliente;
-select * from produto;
-select * from pedido;
+select * from clientes;
+select * from produtos;
+select * from pedidos;
 select * from ItensPedido;
 
 
-
-
-INSERT INTO Cliente (Nome, Email, Telefone) VALUES
+INSERT INTO Clientes (Nome, Email, Telefone) VALUES
     ('João Silva', 'joao@email.com', '(11) 1234-5678'),
     ('Maria Santos', 'maria@email.com', '(22) 9876-5432'),
     ('Pedro Alves', 'pedro@email.com', '(33) 8765-4321'),
@@ -171,7 +138,7 @@ INSERT INTO Cliente (Nome, Email, Telefone) VALUES
     ('Estela Ferreira', 'estela@email.com', '(90) 9876-5432');
 
 
-INSERT INTO Produto (NomeProduto, Preco) VALUES
+INSERT INTO Produtos (NomeProduto, Preco) VALUES
     ('Produto 1', 10.99),
     ('Produto 2', 15.50),
     ('Produto 3', 20.75),
@@ -185,7 +152,7 @@ INSERT INTO Produto (NomeProduto, Preco) VALUES
 
 
 
-INSERT INTO Pedido (ID_Cliente, DataPedido, ValorTotal) VALUES
+INSERT INTO Pedidos (ClienteID, DataPedido, ValorTotal) VALUES
     (1, '2023-09-01', 150.00),
     (1, '2023-09-02', 80.25),
     (1, '2023-09-05', 220.50),
@@ -231,7 +198,7 @@ INSERT INTO Pedido (ID_Cliente, DataPedido, ValorTotal) VALUES
     (20, '2023-10-29', 110.25);
 
 
-INSERT INTO ItensPedido (ID_Pedido, ID_Produto, Quantidade) VALUES
+INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (1, 1, 2),
     (1, 3, 1),
     (2, 2, 3),
@@ -252,8 +219,93 @@ INSERT INTO ItensPedido (ID_Pedido, ID_Produto, Quantidade) VALUES
     (9, 6, 2),
     (10, 8, 1),
     (10, 10, 2);
+    
+-- 1 --
+Select Nome from Clientes order by Nome asc;
 
+-- 2 -- 
+Select Preco from Produtos WHERE preco > 10.0 order by Preco desc Limit 0, 5;
 
+-- 3 -- 
+Select min(ValorTotal) from Pedidos WHERE ValorTotal between 120.0 and 190.0;
 
+-- 4 --
+Select Clientes.Nome
+From Clientes
+Inner Join Pedidos On Clientes.CLienteID = Pedidos.CLienteID;
 
+-- 5 --
+Select Pedidos.PedidoID, Pedidos.ValorTotal, Pedidos.DataPedido, Pedidos.ClienteID, Clientes.Nome 
+From Pedidos
+Inner Join Clientes On Pedidos.ClienteId = Clientes.ClienteID;
 
+-- 6 --
+Select Clientes.Nome, Pedidos.ValorTotal
+From Pedidos 
+Inner Join Clientes On Pedidos.ClienteId = Clientes.ClienteID Where Pedidos.ValorTotal > 200.0 order by Nome asc;
+
+-- 7 --
+Select DataPedido from Pedidos WHERE DataPedido between "2023-09-27" and "2023-10-08" order by DataPedido asc;
+
+-- 8 --
+Select * from Produtos order by Preco asc Limit 0, 5;
+
+-- 9 --
+select Clientes.ClienteID ,Clientes.nome, Produtos.NomeProduto,ItensPedido.Quantidade from itensPedido
+join produtos on itensPedido.PedidoId = Produtos.ProdutoID 
+join Clientes on itensPedido.PedidoID = Clientes.clienteID
+where PedidoID= 3;
+
+-- 10 -- 
+Select Clientes.Nome, Pedidos.ClienteID
+From Pedidos
+Inner Join Clientes On Pedidos.ClienteID = Clientes.ClienteID
+Where Clientes.Nome LIKE '%O';
+
+-- 11 --
+Select Produtos.NomeProduto, Clientes.Nome
+From Produtos
+Join ItensPedido On Produtos.ProdutoID = ItensPedido.PedidoID  
+Join Pedidos On ItensPedido.PedidoID = Pedidos.PedidoID
+Join Clientes On Pedidos.ClienteID = Clientes.ClienteID;
+
+-- 12 -- 
+Select Clientes.Nome, Clientes.ClienteID
+From Clientes
+Left Join Pedidos on  Clientes.ClienteID = Pedidos.CLienteID
+Where Pedidos.PedidoID IS null; 
+
+-- 13 --
+SELECT ClienteID, Nome, Email, Telefone
+FROM Clientes
+WHERE Nome LIKE 'A%';
+
+-- 14 --
+Select 
+Pedidos.PedidoID, Pedidos.DataPedido, Clientes.Nome, ItensPedido.Quantidade, Produtos.NomeProduto, Produtos.Preco
+From Pedidos
+Join Clientes ON Pedidos.ClienteID = Clientes.ClienteID
+Join ItensPedido On Pedidos.PedidoID = ItensPedido.PedidoID
+Join Produtos on ItensPedido.ProdutoID = Produtos.ProdutoID
+where Pedidos.DataPedido between '2023-01-01' AND '2023-12-31'
+Limit 7;
+
+-- 15 -- 
+SELECT ClienteID, Nome, Email, Telefone
+FROM Clientes
+WHERE Nome LIKE '%arc%';
+
+-- 16 --
+Select Pedidos.PedidoID, Pedidos.DataPedido, Pedidos.ValorTotal, Produtos.NomeProduto, ItensPedido.Quantidade
+from Pedidos
+Join ItensPedido On Pedidos.PedidoID = ItensPedido.PedidoID
+Join Produtos on ItensPedido.ProdutoID = Produtos.ProdutoID;
+ 
+-- 17 -- 
+Select Pedidos.PedidoID, Pedidos.DataPedido, Pedidos.ValorTotal, Produtos.NomeProduto, ItensPedido.Quantidade, Clientes.Nome
+From Pedidos
+Join ItensPedido On Pedidos.PedidoID = ItensPedido.PedidoID
+Join Produtos on ItensPedido.ProdutoID = Produtos.ProdutoID
+Join Clientes on Pedidos.ClienteID = Clientes.ClienteID
+order by Pedidos.ValorTotal desc
+Limit 5;
