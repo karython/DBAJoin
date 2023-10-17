@@ -220,6 +220,150 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (10, 8, 1),
     (10, 10, 2);
 
+/*///////////////////////////////////////////////*/
+
+use GERENCIADOR;
+
+show tables;
+
+select *from clientes;
+select *from itenspedido;
+select *from pedidos;
+select *from produtos;
+
+
+select *from clientes order by nome asc;
+select *from produtos
+where preco >=10 order by preco desc limit 5;
+select*from pedidos;
+
+
+select*
+from pedidos
+join clientes
+on Pedidos.ClienteID = Clientes.ClienteID
+where ValorTotal between 120 and 190;
+
+#4. SELECIONE TODOS OS PEDIDOS COM OS NOMES DOS CLIENTES.
+
+select Pedidos.PedidoID , Pedidos.DataPedido , Pedidos.Valortotal , Clientes.nome
+from Pedidos
+inner join Clientes
+on Pedidos.ClienteID = Clientes.CLienteID;
+
+#5. MOSTRE O ID DO PEDIDO, VALOR, DATA, ID DO CLIENTE E O NOME DO CLIENTE.
+
+select Pedidos.PedidoID , Pedidos.ValorTotal , Pedidos.DataPedido , Pedidos.ClienteID , Clientes.nome
+from Pedidos
+inner join clientes
+on Pedidos.ClienteID = Clientes.ClienteID;
+
+#6. Mostre todos os Clientes com Pedidos com um valor acima de $200
+
+select Clientes.Nome , Pedidos.PedidoID , Pedidos.ValorTotal
+from Pedidos
+inner join clientes
+on Pedidos.clienteID = Clientes.ClienteID
+where ValorTotal >=200;
+
+#7.	Organize de Forma crescente alfabética o nome dos clientes selecionados acima.
+
+select Clientes.Nome , Pedidos.PedidoID , Pedidos.ValorTotal
+from Pedidos
+inner join clientes
+on Pedidos.clienteID = Clientes.ClienteID
+where ValorTotal >=200
+order by Clientes.nome asc;
+
+#8.	Selecione todos os pedidos feitos entre 27 de setembro de 2023 e 08 de outubro de 2023 com a data de forma crescente.
+
+select Pedidos.PedidoID , Pedidos.DataPedido
+from Pedidos 
+inner join Clientes
+on Pedidos.ClienteID = Clientes.ClienteID
+where Datapedido between '2023-09-27' and '2023-10-08'
+order by Pedidos.DataPedido asc;
+
+#9.	Selecione os 5 produtos mais baratos.
+
+select ProdutoID , NomeProduto, preco
+from Produtos
+order by preco asc
+limit 5;
+
+#10. Selecione todos os produtos que foram pedidos em um determinado pedido.
+
+select*from ItensPedido
+where PedidoID =1;
+
+#11. Mostre os clientes que possuem pedido que tenham a letra O no final do nome
+
+select Clientes.nome
+from Clientes
+inner join Pedidos
+on Clientes.ClienteID = Pedidos.ClienteID
+where Clientes.Nome like '%O';
+
+#12. Selecione todos os produtos com os nomes dos clientes que os compraram.
+
+select Clientes.ClienteID , Clientes.Nome , Pedidos.PedidoID , Pedidos.ClienteID 
+from Clientes
+inner join Pedidos
+on Clientes.ClienteID = Pedidos.ClienteID;
+
+#13. Encontre os clientes que não fizeram nenhum pedido.
+
+select Clientes.Nome
+from Clientes
+left join Pedidos
+on Clientes.ClienteID = Pedidos.ClienteID
+where Pedidos.PedidoID is null
+order by Clientes.Nome asc;
+
+#14. Mostre somente os clientes que começam com a letra A.
+
+select Nome
+from Clientes
+where Nome Like 'A%';
+
+#15. Encontre todos os pedidos feitos entre duas datas e mostre os produtos incluídos nesses pedidos, limitando os resultados a 7 pedidos.
+
+select Pedidos.DataPedido
+from Pedidos
+inner join ItensPedido
+on Pedidos.PedidoID = ItensPedido.itemID
+inner join Produtos
+on ItensPedido.itemID = Produtos.ProdutoId
+limit 7;
+
+#16. Mostre os clientes que possuam ‘arc’ em qualquer parte do nome
+
+select Nome
+from Clientes
+where Nome like '%arc%';
+
+#17. Mostre o ID do pedido, data, valor total, nome do produto e a quantidade.
+
+select Pedidos.PedidoID , Pedidos.DataPedido , Pedidos.ValorTotal , Produtos.NomeProduto , ItensPedido.Quantidade
+from Pedidos
+inner join ItensPedido
+on Pedidos.PedidoID = ItensPedido.PedidoID
+inner join Produtos
+on ItensPedido.ProdutoId = Produtos.ProdutoID;
+
+#18. Com a consulta realizada acima, mostre agora também o nome do cliente, selecionando apenas os 5 valores totais mais alto.
+
+select Pedidos.PedidoID , Pedidos.Datapedido , Pedidos.ValorTotal , Produtos.NomeProduto , ItensPedido.Quantidade
+from Pedidos
+inner join ItensPedido
+on Pedidos.PedidoID = ItensPedido.PedidoID
+inner join Produtos
+on ItensPedido.ProdutoID = Produtos.ProdutoID
+order by ValorTotal desc
+limit 5;
+
+
+
 
 
 
