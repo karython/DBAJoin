@@ -38,55 +38,11 @@ CREATE TABLE ItensPedido (
     FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID)
 );
 
--- COLINHA
-
-select  Pedidos.PedidoID, Clientes.Nome, Pedidos.DataPedido, Pedidos.ValorTotal, Produtos.NomeProduto, ItensPedido.Quantidade
-from ItensPedido
-join Pedidos on ItensPedido.PedidoID = Pedidos.PedidoID
-join Produtos on  ItensPedido.ProdutoID = Produtos.ProdutoID
-join Clientes on Pedidos.ClienteID = Clientes.ClienteId
-order by ValorTotal DESC
-limit 5;
-
-select *
-from clientes
-where ClienteID between 10 and 20;
-
-select *
-from Clientes
-where Nome like '%arc%';
-
--- junção sem join
-select Pedidos.ValorTotal, Clientes.Nome
-from Pedidos, Clientes
-where Pedidos.ClienteID = Clientes.ClienteID;
-
--- inner join com condições
-select Pedidos.DataPedido, Pedidos.ValorTotal, Clientes.Nome
-from Pedidos
-join Clientes
-on Clientes.ClienteID = Pedidos.ClienteID
-where ValorTotal between 100 and 150
-order by ValorTotal DESC;
-
-
--- left join + uma condição is null para mostrar somente os campos null da coluna definida
-select Clientes.Nome, Clientes.Telefone, Pedidos.DataPedido, Pedidos.ValorTotal
-from Clientes
-left join Pedidos
-on Clientes.ClienteID = Pedidos.ClienteID
-where Pedidos.ValorTotal is null
-ORDER BY Nome ASC
-LIMIT 10;
-
-
 
 select * from clientes;
 select * from produtos;
 select * from pedidos;
 select * from ItensPedido;
-
-
 
 
 INSERT INTO Clientes (Nome, Email, Telefone) VALUES
@@ -264,7 +220,75 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (10, 8, 1),
     (10, 10, 2);
 
+-- 1
+select * from Clientes
+order by Nome ASC;
 
+
+-- 2
+select * from Produtos
+where Preco > 10.00
+ORDER BY Produtos.Preco DESC
+LIMIT 5;
+
+-- 3
+SELECT Pedidos.PedidoID, Clientes.Nome
+FROM Pedidos
+INNER JOIN Clientes ON Pedidos.ClienteID = Clientes.ClienteID;
+
+
+-- 4
+select ClienteID, ValorTotal
+from Pedidos
+where ValorTotal > 200.00;
+
+-- 5
+select Clientes.Nome, Pedidos.ClienteID, Pedidos.ValorTotal
+from Pedidos
+join Clientes on Pedidos.ClienteID = Clientes.ClienteID
+where ValorTotal > 200.00
+order by Nome ASC;
+
+-- 6
+select *
+from pedidos
+where DataPedido
+between '2023-09-27' and '2023-10-08'
+order by ValorTotal ASC;
+
+-- 7
+select *
+from Produtos
+order by Preco ASC
+limit 5;
+
+-- 8 
+SELECT Pedidos.PedidoID, Produtos.NomeProduto
+FROM Pedidos
+INNER JOIN ItensPedido ON Pedidos.PedidoID = ItensPedido.PedidoID
+INNER JOIN Produtos ON ItensPedido.ProdutoID = Produtos.ProdutoID
+WHERE Pedidos.PedidoID = 1; -- Substitua 1 pelo ID do pedido desejado.
+
+-- 9
+SELECT Produtos.NomeProduto, Clientes.Nome
+FROM Produtos
+INNER JOIN ItensPedido ON Produtos.ProdutoID = ItensPedido.ProdutoID
+INNER JOIN Pedidos ON ItensPedido.PedidoID = Pedidos.PedidoID
+INNER JOIN Clientes ON Pedidos.ClienteID = Clientes.ClienteID;
+
+-- 10
+SELECT Clientes.Nome
+FROM Clientes
+LEFT JOIN Pedidos ON Clientes.ClienteID = Pedidos.ClienteID
+WHERE Pedidos.ClienteID IS NULL;
+
+-- 11
+SELECT Pedidos.PedidoID, Pedidos.DataPedido, Produtos.NomeProduto
+FROM Pedidos
+INNER JOIN ItensPedido ON Pedidos.PedidoID = ItensPedido.PedidoID
+INNER JOIN Produtos ON ItensPedido.ProdutoID = Produtos.ProdutoID
+WHERE Pedidos.DataPedido BETWEEN '2023-09-10' AND '2023-09-15'
+LIMIT 5;
 
 
 

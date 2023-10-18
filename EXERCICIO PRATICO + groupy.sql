@@ -10,6 +10,7 @@ CREATE TABLE Clientes (
     Nome VARCHAR(50) NOT NULL,
     Email VARCHAR(100),
     Telefone VARCHAR(15)
+
 );
 
 -- Criar a tabela 'Pedidos'
@@ -18,7 +19,7 @@ CREATE TABLE Pedidos (
     DataPedido DATE,
     ValorTotal DECIMAL(10, 2),
     ClienteID INT,
-    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID) on delete cascade
 );
 
 -- Criar a tabela 'Produtos'
@@ -34,9 +35,33 @@ CREATE TABLE ItensPedido (
     PedidoID INT,
     ProdutoID INT,
     Quantidade INT,
-    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID),
-    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID)
+    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID) on delete cascade,
+    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID) on delete cascade
 );
+
+create table tipo_cliente(
+id_tipo int primary key auto_increment,
+tipo varchar(50)
+);
+
+alter table clientes
+add column id_tipo int;
+
+insert into tipo_cliente(tipo)values ('pessoa física'),('pessoa jurídica');
+
+update clientes set id_tipo = 1 where clienteid = 3;
+select * from clientes where nome like '%s';
+
+
+alter table clientes add constraint fk_tipo_cliente
+foreign key (id_tipo)
+references tipo_cliente(id_tipo)
+on delete cascade;
+
+
+
+
+
 
 -- COLINHA
 
@@ -65,9 +90,7 @@ where Pedidos.ClienteID = Clientes.ClienteID;
 select Pedidos.DataPedido, Pedidos.ValorTotal, Clientes.Nome
 from Pedidos
 join Clientes
-on Clientes.ClienteID = Pedidos.ClienteID
-where ValorTotal between 100 and 150
-order by ValorTotal DESC;
+on Clientes.ClienteID = Pedidos.ClienteID;
 
 
 -- left join + uma condição is null para mostrar somente os campos null da coluna definida
@@ -79,12 +102,31 @@ where Pedidos.ValorTotal is null
 ORDER BY Nome ASC
 LIMIT 10;
 
-
+delete from Clientes where ClienteID = 2;
 
 select * from clientes;
 select * from produtos;
 select * from pedidos;
 select * from ItensPedido;
+
+-- ira somar os valores da coluna informada
+-- nesse exemplo sum esta aplicado na coluna valor total e apelidado
+-- ira somar todos os valores das vendas
+SELECT SUM(ValorTotal) AS ValorVendas
+FROM Pedidos;
+
+-- Consulta para obter o total de vendas por cliente
+SELECT
+    Clientes.ClienteID, -- colunas que vou mostrar
+    Clientes.Nome,
+    SUM(Pedidos.ValorTotal) AS TotalDeVendas -- coluna que ira somar os totais de cada cliente
+FROM Clientes
+LEFT JOIN Pedidos 
+ON Clientes.ClienteID = Pedidos.ClienteID
+GROUP BY Clientes.ClienteID, Clientes.Nome -- agrupa para contagem
+ORDER BY TotalDeVendas DESC;
+
+
 
 
 
@@ -264,6 +306,64 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (10, 8, 1),
     (10, 10, 2);
 
+/*------------------------- select 18/10/2023 ----------------------------*/
+select distinct id_tipo from Clientes;
+
+SELECT COUNT(*) FROM Clientes;
+
+
+select Clientes.Nome, Tipo_cliente.tipo
+from clientes
+right join tipo_cliente
+on tipo_cliente.id_tipo = clientes.id_tipo;
+
+select * from pedidos where Datapedido = '2023-09-10';
+
+-- ver o valor total de vendas
+select  
+	PedidoID,
+    sum(ValorTotal)
+from pedidos;
+
+select *
+from pedidos
+group by datapedido
+;
+
+-- Consulta para obter o total de vendas por cliente
+SELECT
+    C.ClienteID,
+    C.Nome,
+    SUM(P.ValorTotal) AS TotalDeVendas
+FROM Clientes AS C
+LEFT JOIN Pedidos AS P ON C.ClienteID = P.ClienteID
+GROUP BY C.ClienteID, C.Nome
+ORDER BY TotalDeVendas DESC;
+
+
+SELECT 
+	Produtos.NomeProduto, 
+    COUNT(ItensPedido.PedidoID) AS QuantidadePedidos
+FROM Produtos
+LEFT JOIN ItensPedido 
+ON Produtos.ProdutoID = ItensPedido.ProdutoID
+GROUP BY Produtos.NomeProduto
+HAVING COUNT(ItensPedido.PedidoID) > 1; -- codicao que tenha vendido mais de 5 vezes
+
+
+SELECT Clientes.Nome, count(Pedidos.PedidoID) AS TotalCompras
+FROM Clientes
+INNER JOIN Pedidos ON Clientes.ClienteID = Pedidos.ClienteID
+INNER JOIN itensPedido ON Pedidos.PedidoID = itenspedido.PedidoID
+GROUP BY Clientes.ClienteID, Clientes.Nome
+ORDER BY TotalCompras DESC
+;
+
+-- em quantas linhas na tabela pedidos eu tenho o cliente com id = 12
+
+select count(clienteid) from pedidos -- fazer contagem dos pedidos pelo clienteid
+group by pedidos.clienteid -- agrupa os id dos clientes
+having clienteid = 12; -- condicao
 
 
 
