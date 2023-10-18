@@ -4,6 +4,8 @@ CREATE DATABASE Gerenciador;
 -- Usar a base de dados
 USE Gerenciador;
 
+show databases;
+
 -- Criar a tabela 'Clientes'
 CREATE TABLE Clientes (
     ClienteID INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,6 +13,8 @@ CREATE TABLE Clientes (
     Email VARCHAR(100),
     Telefone VARCHAR(15)
 );
+
+
 
 -- Criar a tabela 'Pedidos'
 CREATE TABLE Pedidos (
@@ -38,55 +42,11 @@ CREATE TABLE ItensPedido (
     FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID)
 );
 
--- COLINHA
-
-select  Pedidos.PedidoID, Clientes.Nome, Pedidos.DataPedido, Pedidos.ValorTotal, Produtos.NomeProduto, ItensPedido.Quantidade
-from ItensPedido
-join Pedidos on ItensPedido.PedidoID = Pedidos.PedidoID
-join Produtos on  ItensPedido.ProdutoID = Produtos.ProdutoID
-join Clientes on Pedidos.ClienteID = Clientes.ClienteId
-order by ValorTotal DESC
-limit 5;
-
-select *
-from clientes
-where ClienteID between 10 and 20;
-
-select *
-from Clientes
-where Nome like '%arc%';
-
--- junção sem join
-select Pedidos.ValorTotal, Clientes.Nome
-from Pedidos, Clientes
-where Pedidos.ClienteID = Clientes.ClienteID;
-
--- inner join com condições
-select Pedidos.DataPedido, Pedidos.ValorTotal, Clientes.Nome
-from Pedidos
-join Clientes
-on Clientes.ClienteID = Pedidos.ClienteID
-where ValorTotal between 100 and 150
-order by ValorTotal DESC;
-
-
--- left join + uma condição is null para mostrar somente os campos null da coluna definida
-select Clientes.Nome, Clientes.Telefone, Pedidos.DataPedido, Pedidos.ValorTotal
-from Clientes
-left join Pedidos
-on Clientes.ClienteID = Pedidos.ClienteID
-where Pedidos.ValorTotal is null
-ORDER BY Nome ASC
-LIMIT 10;
-
-
 
 select * from clientes;
 select * from produtos;
 select * from pedidos;
 select * from ItensPedido;
-
-
 
 
 INSERT INTO Clientes (Nome, Email, Telefone) VALUES
@@ -263,8 +223,153 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (9, 6, 2),
     (10, 8, 1),
     (10, 10, 2);
+    
+    -- 1.	Selecione todos os clientes em ordem alfabética crescente pelo nome. --
+    
+    SELECT * FROM clientes ORDER BY nome ASC;
+    
+	-- 2. Selecione todos os produtos com preço superior a $10, ordenados por preço decrescente, limitando o resultado a 5 produtos. -- 
+    
+    SELECT * FROM produtos 
+    WHERE preco >10 
+    ORDER BY preco DESC 
+    LIMIT 5;
+    
+    -- 3.	Selecione os clientes com pedidos entre 120 a 190 reais, mostre qual menor valor pedido. --
+    
+SELECT clienteid, MIN(valortotal) AS menor_valor_pedido
+FROM pedidos
+WHERE valortotal BETWEEN 120 AND 190
+GROUP BY clienteid;
+
+-- 4.	Selecione todos os pedidos com os nomes dos clientes. --
+
+SELECT pedidos.pedidoid , clientes.nome
+from pedidos
+INNER JOIN clientes ON pedidos.clienteid = clientes.clienteid;
+
+SELECT Pedidos.*, Clientes.Nome
+FROM Pedidos
+INNER JOIN Clientes ON Pedidos.ClienteID = Clientes.ClienteID;
+
+
+ -- 5.	Mostre o ID do pedido, valor, data, ID do cliente e o nome do cliente. -- 
+SELECT Pedidos.PedidoID, Pedidos.ValorTotal, Pedidos.DataPedido, Pedidos.ClienteID, Clientes.Nome
+FROM Pedidos
+INNER JOIN Clientes ON Pedidos.ClienteID = Clientes.ClienteID;
+
+-- 6.	Mostre todos os Clientes com Pedidos com um valor acima de $200.-- 
+SELECT Clientes.ClienteID, Clientes.Nome, Pedidos.PedidoID, Pedidos.ValorTotal
+FROM Clientes
+INNER JOIN Pedidos ON Clientes.ClienteID = Pedidos.ClienteID
+WHERE Pedidos.ValorTotal > 200;
+
+-- 7.Organize de Forma crescente alfabética o nome dos clientes selecionados acima. -- 
+
+SELECT Clientes.ClienteID, Clientes.Nome, Pedidos.PedidoID, Pedidos.ValorTotal
+FROM Clientes
+INNER JOIN Pedidos ON Clientes.ClienteID = Pedidos.ClienteID
+WHERE Pedidos.ValorTotal > 200
+ORDER BY Clientes.Nome ASC;
+
+
+-- 8.Selecione todos os pedidos feitos entre 27 de setembro de 2023 e 08 de outubro de 2023 com a data de forma crescente. -- 
+SELECT *
+FROM Pedidos
+WHERE DataPedido BETWEEN '2023-09-27' AND '2023-10-08'
+ORDER BY DataPedido ASC;
+
+-- 9.Selecione os 5 produtos mais baratos. -- 
+SELECT * 
+FROM produtos
+ORDER BY preco
+LIMIT 5;
+
+-- 10.Selecione todos os produtos que foram pedidos em um determinado pedido. -- 
+
+SELECT p.NomeProduto, ip.Quantidade
+FROM ItensPedido ip
+JOIN Produtos p ON ip.ProdutoID = p.ProdutoID
+WHERE ip.PedidoID = 8;
+
+
+-- 11.Mostre os clientes que possuem pedido que tenham a letra O no final do nome --
+SELECT C.ClienteID, C.Nome, C.Email, C.Telefone
+FROM Clientes C
+JOIN Pedidos P ON C.ClienteID = P.ClienteID
+WHERE P.PedidoID IN (
+    SELECT PedidoID
+    FROM Pedidos
+    WHERE Nome LIKE '%O'
+);
 
 
 
+--  12.	Selecione todos os produtos com os nomes dos clientes que os compraram. -- 
+
+SELECT
+    PR.NomeProduto AS NomeDoProduto,
+    C.Nome AS NomeDoCliente
+FROM Produtos PR
+JOIN ItensPedido IP ON PR.ProdutoID = IP.ProdutoID
+JOIN Pedidos P ON IP.PedidoID = P.PedidoID
+JOIN Clientes C ON P.ClienteID = C.ClienteID;
 
 
+-- 13.Encontre os clientes que não fizeram nenhum pedido. -- 
+SELECT C.ClienteID, C.Nome, C.Email, C.Telefone
+FROM Clientes C
+LEFT JOIN Pedidos P ON C.ClienteID = P.ClienteID
+WHERE P.PedidoID IS NULL;
+
+-- 14.	Mostre somente os clientes que começam com a letra A. -- 
+SELECT ClienteID, Nome, Email, Telefone
+FROM Clientes
+WHERE Nome LIKE 'A%';
+
+
+-- 15.	Encontre todos os pedidos feitos entre duas datas e mostre os produtos incluídos nesses pedidos, limitando os resultados a 7 pedidos. --
+SELECT
+    P.PedidoID,
+    P.DataPedido,
+    C.Nome AS NomeCliente,
+    IP.Quantidade,
+    PR.NomeProduto,
+    PR.Preco
+FROM Pedidos P
+JOIN Clientes C ON P.ClienteID = C.ClienteID
+JOIN ItensPedido IP ON P.PedidoID = IP.PedidoID
+JOIN Produtos PR ON IP.ProdutoID = PR.ProdutoID
+WHERE P.DataPedido BETWEEN '2023-01-01' AND '2023-12-31'
+LIMIT 7;
+
+-- 16.	Mostre os clientes que possuam ‘arc’ em qualquer parte do nome. --
+SELECT ClienteID, Nome, Email, Telefone
+FROM Clientes
+WHERE Nome LIKE '%arc%';
+
+-- 17.	Mostre o ID do pedido, data, valor total, nome do produto e a quantidade. --
+SELECT
+    P.PedidoID,
+    P.DataPedido,
+    P.ValorTotal,
+    PR.NomeProduto,
+    IP.Quantidade
+FROM Pedidos P
+JOIN ItensPedido IP ON P.PedidoID = IP.PedidoID
+JOIN Produtos PR ON IP.ProdutoID = PR.ProdutoID;
+
+-- 18.	Com a consulta realizada acima, mostre agora também o nome do cliente, selecionando apenas os 5 valores totais mais alto. --
+SELECT
+    P.PedidoID,
+    P.DataPedido,
+    P.ValorTotal,
+    PR.NomeProduto,
+    IP.Quantidade,
+    C.Nome AS NomeCliente
+FROM Pedidos P
+JOIN ItensPedido IP ON P.PedidoID = IP.PedidoID
+JOIN Produtos PR ON IP.ProdutoID = PR.ProdutoID
+JOIN Clientes C ON P.ClienteID = C.ClienteID
+ORDER BY P.ValorTotal DESC
+LIMIT 5;
