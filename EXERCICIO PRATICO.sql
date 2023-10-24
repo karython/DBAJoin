@@ -382,4 +382,96 @@ ORDER BY ValorTotal
 DESC
 LIMIT 5;
 
-SELECT * FROM Clientes;
+/*1 - Criar a tabela Tipo de Cliente para adicionar o tipo de cada pessoa, se ela é pessoa JURÍDICA OU FÍSICA.*/
+CREATE TABLE TipoDeCliente (
+	TipoID INT AUTO_INCREMENT PRIMARY KEY,
+    TipoCliente VARCHAR(15)
+    /*ClienteID INT,
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)*/
+);
+
+drop table TipoDeCliente;
+
+/*2 - Alterar a tabela clientes adicionando a nova coluna tipo cliente.*/
+	ALTER TABLE Clientes
+    ADD TipoCliente INT;
+    
+    /*ALTER TABLE Clientes
+    DROP COLUMN TipoCliente;*/
+    
+    ALTER TABLE Clientes
+	ADD FOREIGN KEY (TipoCliente) REFERENCES TipoDeCliente(TipoID);
+    
+    select * from Clientes;
+    
+/*3 - Inserir os dois tipos de pessoa na tabela.*/
+	INSERT INTO TipoDeCliente (TipoCliente) VALUES ('Pessoa Física');
+    INSERT INTO TipoDeCliente (TipoCliente) VALUES ('Pessoa Jurídica');
+    
+    
+/*4 - Cadastre todos os clientes que o nome termina com a letra ‘A’ como pessoa Física e todos os clientes que o nome termina com a letra ‘O’ como pessoa jurídica.*/
+	SELECT ClienteID, Nome, TipoCliente FROM Clientes
+    WHERE Nome LIKE '%a';
+    SELECT ClienteID, Nome, TipoCliente FROM Clientes
+    WHERE Nome LIKE '%o';
+    SELECT * FROM TipoDeCliente;
+    
+    UPDATE Clientes 
+    SET TipoCliente = 1
+    WHERE Nome LIKE '%a';
+    
+    UPDATE Clientes 
+    SET TipoCliente = 2
+    WHERE Nome LIKE '%o';
+    
+/*5 - Faça uma busca dos clientes ignorando as repetições dos tipos de pessoa.*/
+	SELECT DISTINCT TipoCliente FROM Clientes;
+    
+/*6 - Mostre o nome dos clientes e os seus tipos, mesmo tendo um tipo cadastrado ou não.*/
+	SELECT Nome, TipoCliente FROM Clientes;
+/*7 - Com a consulta acima, agora mostre os nomes de clientes que não possuem tipo.*/
+	SELECT Nome, TipoCliente FROM Clientes
+    WHERE TipoCliente IS NOT NULL;
+/*8 - Faça uma consulta que mostre os dados do cliente e o nome do tipo em vez do código de tipo.*/
+	SELECT Clientes.Nome, TipoDeCliente.TipoCliente 
+    FROM Clientes
+    JOIN TipoDeCliente
+    ON TipoDeCliente.TipoID = Clientes.TipoCliente;
+    
+/*9 - Os clientes dos Id (5, 9, 10, 20, 25, 40, 43, 89) retornaram e fizeram novas compras, sendo que os clientes de id (5, 25 e 20) compraram cada um 3 produtos no dia 17 de outubro de 2023, os clientes de id (9 e 43) compraram cada um 6 produtos no dia 12 de setembro de 2023, e o cliente de id (10, 40 e 89) comprou todos os produtos disponíveis no dia 15 de outubro de 2023.*/
+
+/*10 - Faça uma busca de todos os pedidos entre os dias 01 e 31 de outubro.*/
+	SELECT * FROM Pedidos
+    WHERE DataPedido BETWEEN '2023-10-01' AND '2023-10-31';
+/*11 - Faca uma busca somando o valor de todos pedidos.*/
+	SELECT sum(ValorTotal)
+    FROM Pedidos;
+/*12 - Liste os clientes que possuem compras em um mesmo dia.*/
+SELECT Clientes.Nome, Pedidos.DataPedido 
+FROM Clientes
+JOIN Pedidos
+ON Pedidos.PedidoID = Clientes.ClienteID
+WHERE DataPedido LIKE '%2023-10-29%';
+
+select * from Pedidos
+order by DataPedido;
+/*13 - Faça uma consulta que retorne o total de vendas de cada cliente.*/
+SELECT sum(Pedidos.ValorTotal), Clientes.Nome
+FROM Pedidos
+JOIN Clientes
+ON Pedidos.ClienteID = Pedidos.ClienteID
+GROUP BY Nome;
+/*14 - Mostre os produtos que foram comprados mais de 1 vez.*/
+SELECT Produtos.NomeProduto, count(*) 
+FROM Produtos
+JOIN ItensPedido
+ON Produtos.ProdutoID = ItensPedido.ProdutoID;
+
+/*15 - Faça uma busca que mostre o nome dos clientes que compraram mais produtos.*/
+SELECT Clientes.Nome, count(Pedidos.PedidoID)
+FROM Clientes
+JOIN Pedidos
+ON Clientes.ClienteID = Pedidos.ClienteID
+GROUP BY Clientes.Nome
+Order by count(Pedidos.PedidoID)
+DESC;
