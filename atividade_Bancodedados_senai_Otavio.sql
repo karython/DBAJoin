@@ -350,3 +350,102 @@ on pr.produtoid = ip.produtoid
 join clientes as c
 on c.clienteid = p.clienteid
 order by p.valortotal desc limit 5;
+
+/*Outras Atividades*/
+/*Atividade 1. Criar a tabela Tipo de Cliente para adicionar o tipo de cada pessoa, se ela é pessoa JURÍDICA OU FÍSICA.*/
+Create Table TipoDeCliente (
+ClienteID int not null auto_increment,
+TipoCliente varchar(60) not null,
+Primary Key (ClienteID)
+);
+desc tipodecliente;
+Select * from tipodecliente;
+Insert into tipodecliente values ('1', 'Pessoa Física'), ('2', 'Pessoa Jurídica'); 
+
+desc clientes;
+alter table clientes add column TipoClienteID int;
+alter table clientes add foreign key(TipoClienteID) references TipoDeCliente(ClienteID);
+ALTER TABLE Clientes ADD CONSTRAINT TipoClienteID
+	FOREIGN KEY (TipoClienteID)
+	REFERENCES TipoDeCliente (ClienteID)
+	ON DELETE CASCADE;
+
+/*Atividade 2. Alterar a tabela clientes adicionando a nova coluna tipo cliente.*/
+Select * from clientes;
+Desc clientes;
+alter table clientes add column TipoClienteID int;
+alter table clientes add foreign key(TipoClienteID) references TipoDeCliente(ClienteID);
+ALTER TABLE Clientes ADD CONSTRAINT TipoClienteID
+	FOREIGN KEY (TipoClienteID)
+	REFERENCES TipoDeCliente (ClienteID)
+	ON DELETE CASCADE;
+
+/*Atividade 3. Inserir os dois tipos de pessoa na tabela.*/;
+Select * from Clientes;
+UPDATE `clientes` SET `TipoClienteID` = '1' WHERE (`ClienteID` = '89');
+UPDATE `clientes` SET `TipoClienteID` = '2' WHERE (`ClienteID` = '88');
+
+/*Atividade 4. Cadastre todos os clientes que o nome termina com a letra ‘A’ como pessoa Física e todos os clientes que o nome termina com a letra ‘O’ como pessoa jurídica.*/
+Update Clientes set TipoClienteID = '1' where Nome like '%A';
+Update Clientes set TipoClienteID = '2' where Nome like '%O';
+
+/*Atividade 5. Faça uma busca dos clientes ignorando as repetições dos tipos de pessoa.*/
+Select * from clientes;
+
+/*Atividade 6. Mostre o nome dos clientes e os seus tipos, mesmo tendo um tipo cadastrado ou não.*/
+Select c.Nome, c.TipoClienteID from clientes as c
+left join tipodecliente as tp
+on c.TipoClienteId = tp.ClienteID;
+
+/*Atividade 7. Com a consulta acima, agora mostre os nomes de clientes que não possuem tipo.*/
+desc clientes;
+desc tipodecliente;
+Select c.Nome, tp.TipoCliente from clientes as c
+left join tipodecliente as tp
+on c.TipoClienteId = tp.ClienteID
+where c.TipoClienteID is null;
+
+/*Atividade 8. Faça uma consulta que mostre os dados do cliente e o nome do tipo em vez do código de tipo.*/
+Select c.Nome, tp.TipoCliente from clientes as c
+left join tipodecliente as tp
+on c.TipoClienteId = tp.ClienteID;
+
+/*Atividade 9. Os clientes dos Id (5, 9, 10, 20, 25, 40, 43, 89) retornaram e fizeram novas compras, sendo que os clientes de id (5, 25 e 20) compraram cada um 3 produtos no dia 17 de outubro de 2023, os clientes de id (9 e 43) compraram cada um 6 produtos no dia 12 de setembro de 2023, e o cliente de id (10, 40 e 89) comprou todos os produtos disponíveis no dia 15 de outubro de 2023. Questão incompleta, o que é para fazer? Quais produtos eles compraram ?*/
+
+/*Atividade 10. Faça uma busca de todos os pedidos entre os dias 01 e 31 de outubro.*/
+select * from Pedidos where datapedido between 2023-09-01 and 2023-09-31;
+
+/*Atividade 11. Faca uma busca somando o valor de todos pedidos.*/
+Select sum(ValorTotal) from pedidos;
+
+/*Atividade 12. Liste os clientes que possuem compras em um mesmo dia.*/
+Select datapedido, c.nome  From pedidos as p
+join clientes as c
+on c.clienteId = p.ClienteID
+group by datapedido order by DataPedido;
+
+/*Atividade 13. Faça uma consulta que retorne o total de vendas de cada cliente.*/
+Select sum(p.valortotal), c.nome from pedidos as p
+join clientes as c
+on c.clienteId = p.ClienteID
+group by nome;
+
+/*Atividade 14. Mostre os produtos que foram comprados mais de 1 vez.*/
+Select p.NomeProduto, count(*) from itenspedido as ip
+join produtos as p
+on p.ProdutoID = ip.ProdutoID
+where quantidade > 1
+group by p.NomeProduto
+order by p.NomeProduto;
+
+/*Atividade 15. Faça uma busca que mostre o nome dos clientes que compraram mais produtos.*/
+Select c.nome, count(p.pedidoid) from clientes as c
+join pedidos as p 
+on c.clienteid = p.clienteid
+join itenspedido as ip
+on ip.pedidoid = p.pedidoid
+group by c.nome
+order by count(p.pedidoid) desc;
+
+select * from itenspedido;
+Select * from pedidos;
