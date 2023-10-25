@@ -221,6 +221,8 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (10, 10, 2);
 
 
+#Lista de Exercícios 1
+
 /*EXERCÍCIO 1 -  1.	Selecione todos os clientes em ordem alfabética crescente pelo nome.*/
 
 SELECT *
@@ -382,6 +384,8 @@ ORDER BY ValorTotal
 DESC
 LIMIT 5;
 
+#Lista de Exercícios 2
+
 /*1 - Criar a tabela Tipo de Cliente para adicionar o tipo de cada pessoa, se ela é pessoa JURÍDICA OU FÍSICA.*/
 CREATE TABLE TipoDeCliente (
 	TipoID INT AUTO_INCREMENT PRIMARY KEY,
@@ -475,3 +479,74 @@ ON Clientes.ClienteID = Pedidos.ClienteID
 GROUP BY Clientes.Nome
 Order by count(Pedidos.PedidoID)
 DESC;
+
+# Lista de exercícios 3
+
+/*1- Escreva uma busca que mostre a data atual.*/
+
+SELECT CURRENT_DATE() FROM Pedidos;
+
+/*2- Escreva uma busca que mostre o ID do pedido, Data do pedido e o valor total com aumento de 10%.*/
+
+SELECT 
+	PedidoID, 
+    DataPedido, 
+    ValorTotal, 
+    Valortotal*1.1 AS ValortotalComAumento
+FROM Pedidos;
+
+#Seleção com ROUND() que retorna o valor arredondado com o número de casas decimais depois da vírgula indicado pelo número "2"
+SELECT
+    PedidoID,
+    DataPedido,
+    ValorTotal,
+    ROUND((ValorTotal * 1.1), 2) AS ValorTotalComAumento
+FROM
+    Pedidos;
+    
+/*3- Escreva uma busca igual a anterior, mas que mostre também uma coluna com o valor que foi acrescido.*/
+#Observação: Não consegui fazer com que  a busca retornasse uma coluna com o valor acrescido, pois fica dando erro dizendo que a coluna ValorTotalComAumento não existe. O Bard sugeriu a criação da coluna para que ela armazene os valore. Verificar com o professor.
+
+    SELECT
+    PedidoID,
+    DataPedido,
+    ValorTotal * 1.1 AS ValorTotalComAumento, 
+    ValorTotal*.1 AS ValorAcrescido
+FROM
+    Pedidos;
+    
+/*4- Escreva uma busca que mostre o nome do cliente em letras maiúsculas e e-mail com letras minúsculas.*/
+SELECT UPPER(Nome), LOWER(Email) FROM Clientes;
+/*5- Faça uma busca que mostre as três primeiras letras dos nomes dos clientes e seu e-mail.*/
+
+#seleção normal com SUBSTRING()
+SELECT SUBSTRING(Nome, 1, 3), Email FROM Clientes;
+
+#Com UPPER
+SELECT UPPER(SUBSTRING(Nome, 1, 3)) AS PrimeirasLetrasDoNome, Email FROM Clientes;
+
+#Com colunas concatenadas usando CONCAT()
+SELECT CONCAT(UPPER(SUBSTRING(Nome, 1, 3)), ' - ', Email) AS NomeEmail FROM Clientes;
+
+/*6- Faça uma busca que mostre a quantidade de dias entre a data do pedido e a data de hoje.*/
+
+SELECT PedidoID, DataPedido, ( DataPedido - current_date()) as Diferença 
+FROM Pedidos;
+
+/*7- Faça uma consulta igual a anterior, mas mostre outra coluna que acrescente 15 dias da data do pedido.*/
+
+SELECT
+    PedidoID,
+    DataPedido,
+    current_date() as DataAtual,
+    (current_date() - DataPedido) AS Diferença,
+    DataPedido + INTERVAL 15 DAY AS DataPedido15Dias
+FROM
+    Pedidos;
+    
+    #Resposta do professor
+    select *, current_date() - dataPedido as Diferença from Pedidos;
+    select *,
+    datediff(current_date, DataPedido) as Diferença,
+    date_add(DataPedido, interval 15 day) as quantidade
+    from Pedidos;
