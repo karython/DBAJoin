@@ -401,3 +401,32 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     join Itenspedido on Pedidos.Pedidoid = ItensPedido.PedidoID
     group by Clientes.Nome
     order by QuantidadeComprada desc;
+    
+    /*25/10/23 atividade de calculofunções e datas*/
+    /*Q1*/
+    select  now(); /*mostra data e hora*/
+	select current_date(); /*mostra apenas a data*/
+    
+    /*Q2*/
+    select
+     pedidoid, datapedido, valortotal, valortotal * 1.1 as acrescido from pedidos;
+     
+     /*Q3*/
+      select
+     pedidoid, datapedido, valortotal, valortotal * 1.1 as acrescido, valortotal *.1 from pedidos;
+     
+     /*Q4*/
+     select upper(Nome), lower(Email) from clientes;
+     /*upper coloca tudo em maiusculo e lower coloca tudo em minusculo*/
+     
+     /*Q5*/
+     select upper(substring(Nome, 1,3)), Email from clientes;
+     /*upper coloca tudo em maiusculo e substring seleciona a quantidade de caracteres a ser contada*/
+     
+     /*Q6*/
+     select *, current_date() - datapedido as diferenca from pedidos;
+     select *, datediff(current_date,datapedido) as diferenca from pedidos;
+     
+     /*Q7*/
+     select *, datediff(current_date, datapedido) as diferenca,
+     date_add(datapedido, interval 15 day) as quantidades from pedidos;
