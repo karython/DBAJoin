@@ -10,6 +10,7 @@ CREATE TABLE Clientes (
     Nome VARCHAR(50) NOT NULL,
     Email VARCHAR(100),
     Telefone VARCHAR(15)
+
 );
 
 -- Criar a tabela 'Pedidos'
@@ -18,7 +19,7 @@ CREATE TABLE Pedidos (
     DataPedido DATE,
     ValorTotal DECIMAL(10, 2),
     ClienteID INT,
-    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID) on delete cascade
 );
 
 -- Criar a tabela 'Produtos'
@@ -34,15 +35,106 @@ CREATE TABLE ItensPedido (
     PedidoID INT,
     ProdutoID INT,
     Quantidade INT,
-    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID),
-    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID)
+    FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID) on delete cascade,
+    FOREIGN KEY (ProdutoID) REFERENCES Produtos(ProdutoID) on delete cascade
 );
 
+create table tipo_cliente(
+id_tipo int primary key auto_increment,
+tipo varchar(50)
+);
+
+alter table clientes
+add column id_tipo int;
+
+insert into tipo_cliente(tipo)values ('pessoa física'),('pessoa jurídica');
+
+update clientes set id_tipo = 1 where clienteid = 3;
+select * from clientes where nome like '%s';
+
+
+alter table clientes add constraint fk_tipo_cliente
+foreign key (id_tipo)
+references tipo_cliente(id_tipo)
+on delete cascade;
+
+
+
+
+-- somar total cada usuario
+
+
+
+
+
+
+
+-- COLINHA
+
+select  Pedidos.PedidoID, Clientes.Nome, Pedidos.DataPedido, Pedidos.ValorTotal, Produtos.NomeProduto, ItensPedido.Quantidade
+from ItensPedido
+join Pedidos on ItensPedido.PedidoID = Pedidos.PedidoID
+join Produtos on  ItensPedido.ProdutoID = Produtos.ProdutoID
+join Clientes on Pedidos.ClienteID = Clientes.ClienteId
+order by ValorTotal DESC
+limit 5;
+
+select *
+from clientes
+where ClienteID between 10 and 20;
+
+select *
+from Clientes
+where Nome like '%arc%';
+
+-- junção sem join
+select Pedidos.ValorTotal, Clientes.Nome
+from Pedidos, Clientes
+where Pedidos.ClienteID = Clientes.ClienteID;
+
+-- inner join com condições
+select Pedidos.DataPedido, Pedidos.ValorTotal, Clientes.Nome
+from Pedidos
+join Clientes
+on Clientes.ClienteID = Pedidos.ClienteID;
+
+
+-- left join + uma condição is null para mostrar somente os campos null da coluna definida
+select Clientes.Nome, Clientes.Telefone, Pedidos.DataPedido, Pedidos.ValorTotal
+from Clientes
+left join Pedidos
+on Clientes.ClienteID = Pedidos.ClienteID
+where Pedidos.ValorTotal is null
+ORDER BY Nome ASC
+LIMIT 10;
+
+delete from Clientes where ClienteID = 2;
 
 select * from clientes;
 select * from produtos;
 select * from pedidos;
 select * from ItensPedido;
+
+-- ira somar os valores da coluna informada
+-- nesse exemplo sum esta aplicado na coluna valor total e apelidado
+-- ira somar todos os valores das vendas
+SELECT SUM(ValorTotal) AS ValorVendas
+FROM Pedidos;
+
+-- Consulta para obter o total de vendas por cliente
+SELECT
+    Clientes.ClienteID, -- colunas que vou mostrar
+    Clientes.Nome,
+    SUM(Pedidos.ValorTotal) AS TotalDeVendas -- coluna que ira somar os totais de cada cliente
+FROM Clientes
+LEFT JOIN Pedidos 
+ON Clientes.ClienteID = Pedidos.ClienteID
+GROUP BY Clientes.ClienteID, Clientes.Nome -- agrupa para contagem
+ORDER BY TotalDeVendas DESC;
+
+
+
+
 
 
 INSERT INTO Clientes (Nome, Email, Telefone) VALUES
@@ -220,133 +312,206 @@ INSERT INTO ItensPedido (PedidoID, ProdutoID, Quantidade) VALUES
     (10, 8, 1),
     (10, 10, 2);
     
-show tables from gerenciador; 
+    
+    select  ID_cliente, count(*) as totalpedidos
+    from pedido
+    group by ID_cliente;
+
+   
+
+    
+    SELECT
+    C.ClienteID,
+    C.Nome,
+    SUM(P.ValorTotal) AS TotalDeVendas
+FROM Clientes AS C
+LEFT JOIN Pedidos AS P ON C.ClienteID = P.ClienteID
+GROUP BY C.ClienteID, C.Nome
+ORDER BY TotalDeVendas DESC;
+    
+    
+    
+    
+
+/*------------------------- select 18/10/2023 ----------------------------*/
+select distinct id_cliente from pedido;
+select * from pedido;
+
+SELECT COUNT(*) FROM Clientes;
+select count(*) from pedido;
+select sum(valortotal) from pedido;
+
+ SELECT ClienteID, COUNT(*) AS TotalDePedidos
+FROM Pedidos
+GROUP BY ClienteID;
+
+select Clientes.Nome, Tipo_cliente.tipo
+from clientes
+right join tipo_cliente
+on tipo_cliente.id_tipo = clientes.id_tipo;
+
+select * from pedidos where Datapedido = '2023-09-10';
+
+-- ver o valor total de vendas
+select  
+	PedidoID,
+    sum(ValorTotal)
+from pedidos;
+
+select *
+from pedidos
+group by datapedido
+;
+
+-- Consulta para obter o total de vendas por cliente
+SELECT
+    C.ClienteID,
+    C.Nome,
+    SUM(P.ValorTotal) AS TotalDeVendas
+FROM Clientes AS C
+LEFT JOIN Pedidos AS P ON C.ClienteID = P.ClienteID
+GROUP BY C.ClienteID, C.Nome
+ORDER BY TotalDeVendas DESC;
+
+
+SELECT 
+	Produtos.NomeProduto, 
+    COUNT(ItensPedido.PedidoID) AS QuantidadePedidos
+FROM Produtos
+LEFT JOIN ItensPedido 
+ON Produtos.ProdutoID = ItensPedido.ProdutoID
+GROUP BY Produtos.NomeProduto
+HAVING COUNT(ItensPedido.PedidoID) > 1; -- codicao que tenha vendido mais de 5 vezes
+
+
+SELECT Clientes.Nome, count(Pedidos.PedidoID) AS TotalCompras
+FROM Clientes
+INNER JOIN Pedidos ON Clientes.ClienteID = Pedidos.ClienteID
+INNER JOIN itensPedido ON Pedidos.PedidoID = itenspedido.PedidoID
+GROUP BY Clientes.ClienteID, Clientes.Nome
+ORDER BY TotalCompras DESC
+;
+
+/* em quantas linhas na tabela pedidos eu tenho o cliente com id = 1 */
+
+select count(clienteid) as total_pedidos from pedidos 
+
+group by clienteid
+having clienteid = 1;
+ 
+
+select * from cliente
+order by id_cliente desc;
+
+
+delimiter $$
+create procedure InserirPessoas (in nome varchar(255), in telefone varchar(80))
+begin
+	insert into cliente(nome, telefone) values (nome, telefone);
+end$$
+
+delimiter ;
+
+
+call inserirpessoas('carlim','9999-1223');
+
+
+
+-- laboratório 24/10/2023 --------------------------------------------------------------------
+-- calculos
+select datapedido,valortotal, valortotal - 10 as valorfinal from pedidos;
+select datapedido,valortotal, valortotal + 10 from pedidos;
+select *, valortotal, valortotal * 1.1 from pedidos;
+
+
+
+
+select datapedido,valortotal, valortotal / 10 from pedidos;
+
+
+
+select * from pedidos;
 select * from clientes;
-select * from itenspedido;
-select * from pedidos;
-select * from produtos;
-    
-desc pedidos;
-desc itenspedido;
-    
-select * from pedidos as p
-join clientes as c
-on c.clienteID = PedidoID 
-order by c.nome;
-    
-/*Atividade 1*/
-Select * from clientes order by nome;
 
-/*Atividade 2*/
-Select * from Produtos where preco > '10.00' order by preco desc limit 5;
 
-/*Atividade 3*/
-select Valortotal, c.nome from pedidos as p 
-join clientes as c
-on c.clienteid = p.pedidoid
-where valortotal between '120.00' and '190.00';
 
-select Valortotal, c.nome from pedidos as p 
-join clientes as c
-on c.clienteid = p.pedidoid
-order by valortotal limit 1;
 
-/*Atividade 4*/
-select * from pedidos as p 
-join clientes as c
-on c.clienteid = p.pedidoid;
+SELECT nome, qtd from (select 
+	c.clienteId,
+	c.nome,
+    SUM(ip.quantidade) as qtd
+from pedidos p
+join clientes c
+on c.clienteId = p.clienteID
+join itenspedido ip
+on ip.pedidoId = p.pedidoId
+group by c.clienteId) as dados
+where qtd = (select max(qtd) from (select 
+	c.clienteId,
+	c.nome,
+    SUM(ip.quantidade) as qtd
+from pedidos p
+join clientes c
+on c.clienteId = p.clienteID
+join itenspedido ip
+on ip.pedidoId = p.pedidoId
+group by c.clienteId)as dados);
 
-/*Atividade 5*/
-select * from pedidos;
-select p.pedidoid, p.valortotal, p.datapedido, c.nome, c.clienteid from pedidos as p 
-join clientes as c
-on c.clienteid = p.pedidoid;
 
-/*Atividade 6*/
-select c.nome from pedidos as p 
-join clientes as c
-on c.clienteid = p.pedidoid
-where valortotal > '200.00';
 
-/*Atividade 7*/
-select c.nome from pedidos as p 
-join clientes as c
-on c.clienteid = p.pedidoid
-where valortotal > '200.00'
-order by c.nome;
 
-/*Atividade 8*/
-Select * from pedidos 
-where datapedido between '2023-08-27' and '2023-09-08' 
-Order by datapedido;
 
-/*Atividade 9*/
-Select * from produtos order by preco limit 5;
 
-/*Atividade 10*/
-select ip.PedidoId, ip.produtoid, p.nomeproduto from itenspedido as ip
-join produtos as p
-on p.produtoid = ip.produtoid
-order by pedidoid;
+-- maximo minimo e media dos valores
+select max(valortotal), min(valortotal), avg(valortotal) as mediavalor from pedidos;
 
-/*Atividade 11*/
-select * from pedidos as p
-join clientes as c
-on p.clienteid = c.clienteid 
-where c.nome like '_%O';
 
-/*Atividade 12*/
-Select p.pedidoid, c.nome, po.nomeproduto from itenspedido as ip 
-join pedidos as p
-on p.pedidoid = ip.pedidoid
-join clientes as c
-on c.clienteid = p.clienteid
-join produtos as po
-on po.produtoid = ip.produtoid;
 
-/*Atividade 13*/
-select * from clientes as c
-left outer join pedidos as p
-on p.clienteid = c.clienteid
-where p.pedidoid is null;
 
-SELECT c.* FROM Clientes as c 
-WHERE NOT EXISTS (SELECT 1 FROM pedidos as p WHERE p.clienteid = c.clienteid); /*Gerado por ia*/
-SELECT c.* FROM Clientes as c 
-WHERE c.clienteID NOT IN (SELECT p.clienteID FROM pedidos as p); /*Gerado por ia*/
+-- mostrar os nomes em letra maiuscula ou minuscula
+SELECT upper(nome) from clientes;
 
-/*Atividade 14*/
-select nome from clientes where nome like 'A%_';
 
-/*Atividade 15*/
-Select p.DataPedido, pr.nomeproduto from pedidos as p
-join itenspedido as ip
-on ip.pedidoid = p.pedidoid
-join produtos as pr
-on pr.produtoid = ip.produtoid
-where p.datapedido between '2023-09-01' and '2023-09-07' limit 7;
 
-/*Atividade 16*/
-select * from clientes where nome like '%arc%';
 
-/*Atividade 17*/
-select * from produtos;
-select * from clientes;
-select * from itenspedido;
-select * from pedidos;
 
-select p.pedidoid, p. datapedido, p.valortotal, pr.nomeproduto, ip.quantidade from pedidos as p
-join itenspedido as ip
-on ip.pedidoid = p.pedidoid
-join produtos as pr 
-on pr.produtoid = ip.produtoid;
+-- quantidade caracteres
+SELECT nome, length(nome) as qtdcaracteres from clientes;
 
-/*Atividade 18*/
-select p.pedidoid, p. datapedido, p.valortotal, pr.nomeproduto, ip.quantidade from pedidos as p
-join itenspedido as ip
-on ip.pedidoid = p.pedidoid
-join produtos as pr 
-on pr.produtoid = ip.produtoid
-join clientes as c
-on c.clienteid = p.clienteid
-order by p.valortotal desc limit 5;
+
+
+
+-- quantidade de caracteries que serao exibidos
+select substring(nome, 1,3), email from clientes;
+
+
+
+
+-- translate
+select replace(nome, 'a','b') from clientes;
+
+
+
+-- data atual
+select *, current_date() from pedidos;
+
+-- valor acrecido e o quanto foi acrecido
+select *, valortotal * 1.1 as ValorAcrescido, valortotal * .1 as acrecimo
+from pedidos;
+
+-- para mostrar a quantidade de dias do dia do pedido ate a data de hoje data de hoje menos data pedido
+select pedidoid, current_date - datapedido as intervalodias from pedidos;
+
+-- mostre uma coluna com 15 dias apos a data do pedido
+select pedidoid, datapedido, datapedido + 15 as quinzena, current_date - datapedido from pedidos;
+
+-- resultado vai pegar a data e mostrar-la com um intervalo de daqui 7 anos
+select datapedido, datapedido + interval "7" year as DtPedido from pedidos order by DtPedido;
+
+
+
+
+
+/*------------------------------------------------------------------------------------------*/
+
+
