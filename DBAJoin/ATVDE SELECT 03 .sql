@@ -574,5 +574,73 @@ current_date() as Dataatual,
 datapedido + interval 15 day as Após15dias
 from pedidos;
 
-/*Tutu the GOAT*/
- /*comentario*/
+/*-----------------------------------------------------------------------------------------------------------------*/
+ 
+ /*---1---*/
+ select sum(valortotal)as Totalvendas
+ from pedidos;
+ 
+ /*---2---*/
+ 
+ select * from pedidos;
+ 
+ select clientes.nome ,count(1) as quantidadepedidos
+ from clientes
+ join pedidos
+ on pedidos.clienteid = clientes.clienteid
+ group by pedidos.pedidoid
+ having count(*);
+ 
+ /*---3---*/
+ 
+select * from pedidos;
+
+ select * from clientes;
+ 
+SELECT clientes.nome , COUNT(pedidos.pedidoid) AS numero_de_pedidos
+from clientes
+join pedidos
+on clientes.clienteid = pedidos.clienteid
+group by clientes.clienteid
+having COUNT(pedidos.pedidoid) > 2
+order by numero_de_pedidos desc;
+
+/*---4---*/
+
+
+select * from  pedidos;
+
+select * from produtos;
+
+
+select
+ max(valortotal) as valormax,
+ min(valortotal) as valormin
+ from pedidos;
+ 
+ /*---5---*/
+ select
+ avg(preco) as médiapreco
+ from produtos;
+ 
+ /*---6---*/
+ 
+ select * from produtos;
+ 
+ select
+  SUBSTRING(nomeproduto, 1, 4) as nome
+from
+  produtos;
+  
+  /*---7---*/
+  
+  select pedidoID, current_date() as DataAtual
+  from pedidos;
+  
+  /*---8---*/
+  
+select pedidoid,datapedido,
+current_date() as Dataatual,
+(current_date() - Datapedido) as Diferença,
+datapedido + interval day as DiferencaData
+from pedidos;
